@@ -1,9 +1,10 @@
 /.bundle/
 /.yardoc
-/_yardoc/
+/_yardoc/4ü1
 /coverage/
 /doc/
 /pkg/
 /spec/reports/
 /tmp/
 .idea/
+services/

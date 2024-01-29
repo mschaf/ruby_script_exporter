@@ -17,11 +17,15 @@ module RubyScriptExporter
       Type.register_type(name, type, help)
     end
 
-    def self.load_file(file)
+    def self.load_string(string)
       loader = ScriptLoader.new
-      code = File.open(file).read
-      loader.instance_eval code
+      Type.clear_types
+      loader.instance_eval string
       loader.services
+    end
+
+    def self.load_file(file)
+      load_string File.open(file).read
     end
 
     def self.load_directory(directory)
@@ -33,7 +37,6 @@ module RubyScriptExporter
       service_files = Dir[directory]
 
       puts "Loading service definitions ..."
-      Type.clear_types
       services = service_files.map { load_file(_1) }.flatten
       probe_count = services.map(&:probes).flatten.count
       puts "Loaded #{Util.counterize('service', services.count)} with a total of #{Util.counterize('probe', probe_count)}"
