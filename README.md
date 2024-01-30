@@ -1,31 +1,64 @@
-# RubyScriptExporter
+# ruby_script_exporter
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ruby_script_exporter`. To experiment with that code, run `bin/console` for an interactive prompt.
+ruby_script_exporter is a small framework to expose metrics produced by ruby snippets to prometheus.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+`gem install ruby_script_exporter`
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+Usage: ruby_script_exporter [options]
+    -s SERVICE_DIR, --script-directory   Specify where to look for service definitions
+    -r, --reload-on-request              Reload service definitions for every request, useful for developing probes
+```
 
-## Development
+## Example Probe
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake [13;2R[13;1Rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+`services/example_probe.rb`:  
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
+type :some_metric, :gauge, 'Some random metric'
 
-## Contributing
+service 'some service' do
+  probe 'some probe' do
+    label :some_label, 'Foo'
+    
+    run do
+       observe :some_metric, 123
+    end
+  end
+end
+```
+ 
+Run the exporter with `ruby_script_exporter` and get `http://localhost:9100` for:  
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ruby_script_exporter.
+```
+# HELP cached_probe_count Count of probes which returned a cached result
+# TYPE cached_probe_count gauge
+cached_probe_count 0
+# HELP error_probe_count Count probes witch threw an error while executing
+# TYPE error_probe_count gauge
+error_probe_count 0
+# HELP probe_execution_time Execution time per probe
+# TYPE probe_execution_time gauge
+probe_execution_time{service="some service",probe="some probe",some_label="Foo"} 7.915019523352385e-06
+# HELP some_metric Some random metric
+# TYPE some_metric gauge
+some_metric{service="some service",probe="some probe",some_label="Foo"} 123
+# HELP successful_probe_count Count of probes which ran successfully
+# TYPE successful_probe_count gauge
+successful_probe_count 1
+# HELP timeout_probe_count Count of probes which timed out
+# TYPE timeout_probe_count gauge
+timeout_probe_count 0
+# HELP total_execution_time Total execution time
+# TYPE total_execution_time gauge
+total_execution_time 6.38000201433897e-05
+# HELP total_probe_count Total probe count
+# TYPE total_probe_count gauge
+total_probe_count 1
+```
+
+Next to `some_metric` there are also a number of internal metrics exposed.
