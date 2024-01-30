@@ -1,3 +1,7 @@
+## 0.0.3
+
+  * Add MIT license
+
 ## 0.0.2
 
   * Added specs

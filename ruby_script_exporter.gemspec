@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = RubyScriptExporter::VERSION
   spec.authors = ["Martin Schaflitzl"]
   spec.email = ["gems@martin-sc.de"]
+  spec.license = 'MIT'
 
   spec.summary = "Export metrics to prometheus from ruby snippets."
   spec.homepage = "https://rubygems.org/gems/ruby_script_exporter"
@@ -14,7 +15,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/mschaf/ruby_script_exporter"
-  # spec.metadata["changelog_uri"] = "https://github.com/mschaf/ruby_script_exporter"https://github.com/mschaf/ruby_script_exporter"
+  spec.metadata["changelog_uri"] = "https://github.com/mschaf/ruby_script_exporter/blob/main/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
