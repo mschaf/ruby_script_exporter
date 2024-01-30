@@ -4,7 +4,7 @@ module RubyScriptExporter
     attr_reader :measurement
     attr_reader :value
 
-    def initialize(measurement, value, timestamp:, probe:, **labels)
+    def initialize(measurement, value, timestamp: nil, probe: nil, **labels)
       @measurement = measurement
       @value = value
       @probe = probe
@@ -17,6 +17,8 @@ module RubyScriptExporter
     end
 
     def combined_labels
+      return @labels unless @probe
+
       @probe.combined_labels.merge(@labels)
     end
 
@@ -34,7 +36,7 @@ module RubyScriptExporter
       line << ' '
       line << @value.to_s
 
-      if @probe.caches_result?
+      if @probe&.caches_result?
         line << ' '
         line << @timestamp.to_s
       end

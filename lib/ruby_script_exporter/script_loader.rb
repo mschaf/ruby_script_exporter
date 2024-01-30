@@ -19,7 +19,7 @@ module RubyScriptExporter
 
     def self.load_string(string)
       loader = ScriptLoader.new
-      Type.clear_types
+      Type.reset_types
       loader.instance_eval string
       loader.services
     end

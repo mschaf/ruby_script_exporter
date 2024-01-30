@@ -8,14 +8,17 @@ module RubyScriptExporter
     def format
       output = []
 
-      @measurements.group_by(&:measurement).map do |type, measurements|
-        type = Type.from_name(type)
-        output << type.format_for_open_metrics
+      @measurements
+        .group_by(&:measurement)
+        .sort_by { |key, _| key }
+        .map do |type, measurements|
+          type = Type.from_name(type)
+          output << type.format_for_open_metrics
 
-        measurements.each do |measurement|
-          output << measurement.format_as_open_metric
+          measurements.each do |measurement|
+            output << measurement.format_as_open_metric
+          end
         end
-      end
 
       output.join("\n")
     end

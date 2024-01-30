@@ -26,8 +26,15 @@ module RubyScriptExporter
       type
     end
 
-    def self.clear_types
+    def self.reset_types
       @types = {}
+      register_type(:cached_probe_count, :gauge, 'Count of probes which returned a cached result')
+      register_type(:error_probe_count, :gauge, 'Count probes witch threw an error while executing')
+      register_type(:successful_probe_count, :gauge, 'Count of probes which ran successfully')
+      register_type(:timeout_probe_count, :gauge, 'Count of probes which timed out')
+      register_type(:total_probe_count, :gauge, 'Total probe count')
+      register_type(:probe_execution_time, :gauge, 'Execution time per probe')
+      register_type(:total_execution_time, :gauge, 'Total execution time')
     end
 
     def format_for_open_metrics

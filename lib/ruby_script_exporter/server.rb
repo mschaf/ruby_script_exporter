@@ -20,7 +20,7 @@ module RubyScriptExporter
     set :default_content_type, 'text'
 
     get '/metrics' do
-      measurements = Executor.new(self.class.services).run
+      measurements = Executor.new(self.class.services, report_execution_time: true, report_counts: true).run
       Formatter.new(measurements).format
     end
   end

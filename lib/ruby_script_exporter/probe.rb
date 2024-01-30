@@ -3,10 +3,15 @@
 module RubyScriptExporter
   class Probe
 
+    class ScriptError < StandardError; end
+    class ScriptTimeout < StandardError; end
+
     attr_reader :name
     attr_reader :labels
     attr_accessor :cache_for
+    attr_accessor :timeout
     attr_writer :runner_proc
+    attr_reader :service
 
     def initialize(name, service)
       @name = name
@@ -14,6 +19,7 @@ module RubyScriptExporter
       @labels = {}
       @last_measurements = nil
       @last_run_at = nil
+      @timeout = 1
     end
 
     def combined_labels
@@ -28,15 +34,32 @@ module RubyScriptExporter
 
     def run
       if caches_result? && @last_measurements && @last_run_at > (Time.now.to_f - @cache_for)
-        return @last_measurements
+        return [@last_measurements, :cached]
       end
 
       raise ArgumentError, 'No runner given' unless @runner_proc
 
       runner = Runner.new(self)
-      runner.instance_eval(&@runner_proc)
+
+      start_time = nil
+      end_time = nil
+      begin
+        Timeout::timeout(@timeout) do
+          start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          runner.instance_eval(&@runner_proc)
+          end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        end
+      rescue Timeout::Error
+        raise ScriptTimeout
+      rescue StandardError
+        raise ScriptError
+      end
+
+      execution_time = end_time - start_time
+
       @last_run_at = Time.now.to_f
       @last_measurements = runner.measurements
+      [@last_measurements, execution_time]
     end
   end
 
@@ -49,6 +72,10 @@ module RubyScriptExporter
 
     def cache_for(time)
        @probe.cache_for = time
+    end
+
+    def timeout(timeout)
+      @probe.timeout = timeout
     end
 
     def label(key, value)
