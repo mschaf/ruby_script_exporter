@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'logger'
 
 module RubyScriptExporter
   class Server < Sinatra::Base
@@ -17,11 +18,16 @@ module RubyScriptExporter
       @services = RubyScriptExporter::ScriptLoader.load_directory(@service_directory)
     end
 
+    def self.run
+      measurements = Executor.new(services, report_execution_time: true, report_counts: true).run
+      Formatter.new(measurements).format
+    end
+
     set :default_content_type, 'text'
+    set :logging, Logger::DEBUG
 
     get '/metrics' do
-      measurements = Executor.new(self.class.services, report_execution_time: true, report_counts: true).run
-      Formatter.new(measurements).format
+      self.class.run
     end
   end
 end

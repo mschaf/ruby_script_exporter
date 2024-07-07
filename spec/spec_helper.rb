@@ -15,6 +15,7 @@
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require 'timecop'
+require 'webmock/rspec'
 require_relative '../lib/ruby_script_exporter'
 
 RSpec.configure do |config|

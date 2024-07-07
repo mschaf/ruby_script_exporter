@@ -13,6 +13,14 @@ module RubyScriptExporter
     attr_writer :runner_proc
     attr_reader :service
 
+    def self.raise_errors=(raise_errors)
+      @raise_errors = raise_errors
+    end
+
+    def self.raise_errors
+      @raise_errors
+    end
+
     def initialize(name, service)
       @name = name
       @service = service
@@ -51,8 +59,12 @@ module RubyScriptExporter
         end
       rescue Timeout::Error
         raise ScriptTimeout
-      rescue StandardError
-        raise ScriptError
+      rescue StandardError => e
+        if self.class.raise_errors
+          raise e
+        end
+
+        raise ScriptError, e.inspect
       end
 
       execution_time = end_time - start_time

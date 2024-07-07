@@ -5,27 +5,8 @@ require "bundler/setup"
 require 'optparse'
 require "ruby_script_exporter"
 
-options = {
-  service_dir: 'example_services/',
-  reload_on_request: false,
-  port: 9100,
-  host: '0.0.0.0',
-}
+options = RubyScriptExporter::Util.parse_options
 
-OptionParser.new do |opts|
-  opts.banner = "Usage: ruby_script_exporter [options]"
-
-  opts.on("-s SERVICE_DIR", "--script-directory SERVICE_DIR", "Specify where to look for service definitions") do |service_dir|
-    options[:service_dir] = service_dir
-  end
-
-  opts.on("-r", "--reload-on-request", "Reload service definitions for every request, useful for developing probes") do
-    options[:reload_on_request] = true
-  end
-end.parse!
-
-RubyScriptExporter::Server.service_directory = options[:service_dir]
-RubyScriptExporter::Server.reload_on_request = options[:reload_on_request]
 RubyScriptExporter::Server.set :port, options[:port]
 RubyScriptExporter::Server.set :bind , options[:host]
 RubyScriptExporter::Server.run!

@@ -12,6 +12,7 @@ ruby_script_exporter is a small framework to expose metrics produced by ruby sni
 Usage: ruby_script_exporter [options]
     -s SERVICE_DIR, --script-directory   Specify where to look for service definitions
     -r, --reload-on-request              Reload service definitions for every request, useful for developing probes
+    --raise-errors                       Raise on errors, dont just report the probe as failed
 ```
 
 ## Example Probe
@@ -62,3 +63,23 @@ total_probe_count 1
 ```
 
 Next to `some_metric` there are also a number of internal metrics exposed.
+
+## Build in observers
+
+### HTTP
+
+Used to check a HTTP endpoint.
+
+```
+service 'some_http_service' do
+probe 'some probe' do
+  label :some_label, 'Foo'
+  
+    run do
+      observe_http("https://example.com",
+        expected_body: /Example/,
+      )
+    end
+  end
+end
+```

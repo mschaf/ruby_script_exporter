@@ -1,6 +1,14 @@
 module RubyScriptExporter
   class Executor
 
+    Type.register_type(:cached_probe_count, :gauge, 'Count of probes which returned a cached result', global: true)
+    Type.register_type(:error_probe_count, :gauge, 'Count probes witch threw an error while executing', global: true)
+    Type.register_type(:successful_probe_count, :gauge, 'Count of probes which ran successfully', global: true)
+    Type.register_type(:timeout_probe_count, :gauge, 'Count of probes which timed out', global: true)
+    Type.register_type(:total_probe_count, :gauge, 'Total probe count', global: true)
+    Type.register_type(:probe_execution_time, :gauge, 'Execution time per probe', global: true)
+    Type.register_type(:total_execution_time, :gauge, 'Total execution time', global: true)
+
     def initialize(services, report_execution_time: false, report_counts: false)
       @services = services
       @report_execution_time = report_execution_time
@@ -26,10 +34,12 @@ module RubyScriptExporter
 
         begin
           probe_measurements, execution_time = probe.run
-        rescue Probe::ScriptError
+        rescue Probe::ScriptError => e
+          STDERR.puts "Error while executing #{probe.inspect}: #{e.inspect}"
           error_count += 1
           next
         rescue Probe::ScriptTimeout
+          STDERR.puts "Timeout while executing #{probe.inspect}"
           timeout_count += 1
           next
         end

@@ -1,18 +1,21 @@
 module RubyScriptExporter
   class Type
 
+    attr_reader :global
+
     @types = {}
 
-    def initialize(name, type, help = nil)
+    def initialize(name, type, help = nil, global: false)
       @name = name
       @type = type
       @help = help
+      @global = global
     end
 
-    def self.register_type(name, type, help = nil)
+    def self.register_type(name, type, help = nil, global: false)
       raise ArgumentError, "Type for measurement '#{name}' already registered." if @types.key?(name)
 
-      @types[name.to_sym] = Type.new(name, type, help)
+      @types[name.to_sym] = Type.new(name, type, help, global: global)
     end
 
     def self.from_name(name)
@@ -26,15 +29,12 @@ module RubyScriptExporter
       type
     end
 
+    def self.types
+      @types
+    end
+
     def self.reset_types
-      @types = {}
-      register_type(:cached_probe_count, :gauge, 'Count of probes which returned a cached result')
-      register_type(:error_probe_count, :gauge, 'Count probes witch threw an error while executing')
-      register_type(:successful_probe_count, :gauge, 'Count of probes which ran successfully')
-      register_type(:timeout_probe_count, :gauge, 'Count of probes which timed out')
-      register_type(:total_probe_count, :gauge, 'Total probe count')
-      register_type(:probe_execution_time, :gauge, 'Execution time per probe')
-      register_type(:total_execution_time, :gauge, 'Total execution time')
+      @types = @types.select { |_, v| v.global }
     end
 
     def format_for_open_metrics

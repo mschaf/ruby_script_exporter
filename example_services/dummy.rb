@@ -5,7 +5,7 @@ service 'dummy service' do
 
   probe 'dummy probe' do
     run do
-      observe :time, Time.now
+      observe :time, Time.now.to_i
     end
   end
 
@@ -13,7 +13,7 @@ service 'dummy service' do
     cache_for 30
 
     run do
-      observe :time, Time.now
+      observe :time, Time.now.to_i
     end
   end
 end

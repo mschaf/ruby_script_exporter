@@ -1,6 +1,8 @@
 module RubyScriptExporter
   class Runner
 
+    include Observers::Http
+
     attr_reader :measurements
 
     def initialize(probe)
