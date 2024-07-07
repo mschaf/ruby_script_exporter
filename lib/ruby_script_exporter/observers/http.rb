@@ -3,8 +3,8 @@ require 'http'
 module RubyScriptExporter
   module Observers
     module Http
-      Type.register_type(:http_status, :gauge, "HTTP response status: 0:good, 1:refused, 2:timeout, 3:name_not_resolved, 4:connection_failed, 5:certificate_error, 6:response_code_invalid, 7:response_body_invalid")
-      Type.register_type(:http_response_time, :gauge, "HTTP response time")
+      Type.register_type(:http_status, :gauge, "HTTP response status: 0:good, 1:refused, 2:timeout, 3:name_not_resolved, 4:connection_failed, 5:certificate_error, 6:response_code_invalid, 7:response_body_invalid", global: true)
+      Type.register_type(:http_response_time, :gauge, "HTTP response time", global: true)
 
       def observe_http(url, method: :get, expected_response_code: 200, expected_body: nil, timeout: 0.9)
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
