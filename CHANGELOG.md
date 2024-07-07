@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Fix HTTP Types
+
 ## 0.0.4
 
 * Add HTTP observer
