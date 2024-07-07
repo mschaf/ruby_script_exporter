@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Add HTTP observer
+
 ## 0.0.3
 
   * Add MIT license

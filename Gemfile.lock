@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby_script_exporter (0.0.3)
+    ruby_script_exporter (0.0.4)
       http (~> 5.2.0)
       rackup (~> 2.1.0)
       sinatra (~> 4.0.0)
